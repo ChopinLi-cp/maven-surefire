@@ -20,6 +20,9 @@ package org.apache.maven.surefire.api.util;
  */
 
 import java.util.Comparator;
+import java.util.List;
+
+import org.apache.maven.surefire.api.testset.ResolvedTest;
 
 /**
  * @author Kristian Rosenvold
@@ -29,4 +32,6 @@ public interface RunOrderCalculator
     TestsToRun orderTestClasses( TestsToRun scannedClasses );
 
     Comparator<String> comparatorForTestMethods();
+
+    List<ResolvedTest> getResolvedSpecifiedRunOrder();
 }

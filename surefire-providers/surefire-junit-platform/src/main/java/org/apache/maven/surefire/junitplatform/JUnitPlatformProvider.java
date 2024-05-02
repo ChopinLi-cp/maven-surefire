@@ -36,8 +36,11 @@ import static org.apache.maven.surefire.api.testset.TestListResolver.optionallyW
 import static org.apache.maven.surefire.api.util.TestsToRun.fromClass;
 import static org.apache.maven.surefire.shared.utils.StringUtils.isBlank;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectUniqueId;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
+import org.apache.maven.surefire.api.testset.ResolvedTest;
+import org.apache.maven.surefire.api.testset.RunOrderParameters;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -45,6 +48,7 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,6 +73,8 @@ import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.TagFilter;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.engine.discovery.MethodSelector;
+import org.junit.platform.launcher.TestPlan;
 
 /**
  * JUnit 5 Platform Provider.
@@ -209,28 +215,47 @@ public class JUnitPlatformProvider
 
     private void execute( TestsToRun testsToRun, RunListenerAdapter adapter )
     {
+        List<ResolvedTest> specifiedRunOrder = parameters.getRunOrderCalculator().getResolvedSpecifiedRunOrder();
         if ( testsToRun.allowEagerReading() )
         {
-            List<DiscoverySelector> selectors = new ArrayList<>();
-            testsToRun.iterator()
+            List<DiscoverySelector> selectors = new LinkedList<>();
+            /* testsToRun.iterator()
                 .forEachRemaining( c -> selectors.add( selectClass( c.getName() )  ) );
-
             LauncherDiscoveryRequestBuilder builder = request()
                 .filters( filters )
                 .configurationParameters( configurationParameters )
                 .selectors( selectors );
-
+	    launcher.execute( builder.build(), adapter ); */
+	    specifiedRunOrder.iterator()
+                .forEachRemaining( c -> selectors.add( selectMethod( c.toString() ) ) );
+	    LauncherDiscoveryRequestBuilder builder = request()
+                .filters( filters )
+                .configurationParameters( configurationParameters )
+		.selectors( selectors );
+            /* specifiedRunOrder.iterator()
+		    .forEachRemaining( c -> builder.selectors(selectMethod( c.toString()) ));
+	    LauncherDiscoveryRequest request = builder.build();
+	    TestPlan testPlan = launcher.discover(request); */
             launcher.execute( builder.build(), adapter );
         }
         else
         {
-            testsToRun.iterator()
+            /* testsToRun.iterator()
                 .forEachRemaining( c ->
                 {
                     LauncherDiscoveryRequestBuilder builder = request()
                         .filters( filters )
                         .configurationParameters( configurationParameters )
                         .selectors( selectClass( c.getName() ) );
+                    launcher.execute( builder.build(), adapter );
+                } ); */
+	    specifiedRunOrder.iterator()
+		.forEachRemaining( c ->
+                {
+                    LauncherDiscoveryRequestBuilder builder = request()
+                        .filters( filters )
+                        .configurationParameters( configurationParameters )
+                        .selectors( selectMethod( c.toString() ) );
                     launcher.execute( builder.build(), adapter );
                 } );
         }

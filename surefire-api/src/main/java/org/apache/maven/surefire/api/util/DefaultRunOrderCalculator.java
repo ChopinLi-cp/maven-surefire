@@ -105,6 +105,11 @@ public class DefaultRunOrderCalculator
         }
     }
 
+    @Override
+    public List<ResolvedTest> getResolvedSpecifiedRunOrder() {
+        return this.specifiedRunOrder;
+    }
+
     private void orderTestClasses( List<Class<?>> testClasses, RunOrder runOrder )
     {
         if ( RunOrder.TESTORDER.equals( runOrder ) )

@@ -789,6 +789,8 @@ public abstract class AbstractSurefireMojo
     @Parameter
     private Map<String, String> jdkToolchain;
 
+    @Parameter( property = "framework", defaultValue = "JUnit4" )
+    private String testFramework;
     /**
      *
      */
@@ -3235,7 +3237,7 @@ public abstract class AbstractSurefireMojo
         @Override
         public boolean isApplicable()
         {
-            return junitDepArtifact != null || isAnyJunit4( junitArtifact );
+            return (junitDepArtifact != null || isAnyJunit4( junitArtifact )) && testFramework.equals("JUnit4");
         }
 
         @Override
@@ -3287,7 +3289,7 @@ public abstract class AbstractSurefireMojo
         @Override
         public boolean isApplicable()
         {
-            return junitPlatformRunnerArtifact == null && junitPlatformArtifact != null;
+            return (junitPlatformRunnerArtifact == null && junitPlatformArtifact != null) && testFramework.equals("JUnit5");
         }
 
         @Override
@@ -3464,7 +3466,7 @@ public abstract class AbstractSurefireMojo
         {
             final boolean isJunitArtifact47 = isAnyJunit4( junitArtifact ) && isJunit47Compatible( junitArtifact );
             final boolean isAny47ProvidersForces = isAnyConcurrencySelected() || isAnyGroupsSelected();
-            return isAny47ProvidersForces && ( isJunitArtifact47 || is47CompatibleJunitDep() );
+            return isAny47ProvidersForces && ( isJunitArtifact47 || is47CompatibleJunitDep() ) && testFramework.equals("JUnit4");
         }
 
         @Override
