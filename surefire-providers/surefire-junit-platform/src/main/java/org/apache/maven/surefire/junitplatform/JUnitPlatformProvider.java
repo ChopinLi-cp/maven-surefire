@@ -216,18 +216,17 @@ public class JUnitPlatformProvider
     private void execute( TestsToRun testsToRun, RunListenerAdapter adapter )
     {
         List<ResolvedTest> specifiedRunOrder = parameters.getRunOrderCalculator().getResolvedSpecifiedRunOrder();
+        boolean normal = parameters.getRunOrderCalculator().getNormal();
         if ( testsToRun.allowEagerReading() )
         {
             List<DiscoverySelector> selectors = new LinkedList<>();
-            /* testsToRun.iterator()
-                .forEachRemaining( c -> selectors.add( selectClass( c.getName() )  ) );
-            LauncherDiscoveryRequestBuilder builder = request()
-                .filters( filters )
-                .configurationParameters( configurationParameters )
-                .selectors( selectors );
-	    launcher.execute( builder.build(), adapter ); */
-	    specifiedRunOrder.iterator()
-                .forEachRemaining( c -> selectors.add( selectMethod( c.toString() ) ) );
+	    if (normal) {
+	        testsToRun.iterator()
+                    .forEachRemaining( c -> selectors.add( selectClass( c.getName() )  ) );
+	    } else {
+	        specifiedRunOrder.iterator()
+                    .forEachRemaining( c -> selectors.add( selectMethod( c.toString() ) ) );
+	    }
 	    LauncherDiscoveryRequestBuilder builder = request()
                 .filters( filters )
                 .configurationParameters( configurationParameters )
@@ -240,24 +239,27 @@ public class JUnitPlatformProvider
         }
         else
         {
-            /* testsToRun.iterator()
-                .forEachRemaining( c ->
-                {
-                    LauncherDiscoveryRequestBuilder builder = request()
-                        .filters( filters )
-                        .configurationParameters( configurationParameters )
-                        .selectors( selectClass( c.getName() ) );
-                    launcher.execute( builder.build(), adapter );
-                } ); */
-	    specifiedRunOrder.iterator()
-		.forEachRemaining( c ->
-                {
-                    LauncherDiscoveryRequestBuilder builder = request()
-                        .filters( filters )
-                        .configurationParameters( configurationParameters )
-                        .selectors( selectMethod( c.toString() ) );
-                    launcher.execute( builder.build(), adapter );
-                } );
+	    if (normal) {
+                testsToRun.iterator()
+                    .forEachRemaining( c ->
+                    {
+                        LauncherDiscoveryRequestBuilder builder = request()
+                            .filters( filters )
+                            .configurationParameters( configurationParameters )
+                            .selectors( selectClass( c.getName() ) );
+                        launcher.execute( builder.build(), adapter );
+                    } );
+	    } else {
+	        specifiedRunOrder.iterator()
+		    .forEachRemaining( c ->
+                    {
+                        LauncherDiscoveryRequestBuilder builder = request()
+                            .filters( filters )
+                            .configurationParameters( configurationParameters )
+                            .selectors( selectMethod( c.toString() ) );
+                        launcher.execute( builder.build(), adapter );
+                    } );
+	    }
         }
     }
     

@@ -34,4 +34,6 @@ public interface RunOrderCalculator
     Comparator<String> comparatorForTestMethods();
 
     List<ResolvedTest> getResolvedSpecifiedRunOrder();
+
+    boolean getNormal();
 }

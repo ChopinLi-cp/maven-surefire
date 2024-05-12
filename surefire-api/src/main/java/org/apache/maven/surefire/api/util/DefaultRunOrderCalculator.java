@@ -110,6 +110,15 @@ public class DefaultRunOrderCalculator
         return this.specifiedRunOrder;
     }
 
+    @Override
+    public boolean getNormal() {
+        if ( RunOrder.TESTORDER.equals( runOrder ) ) {
+	    return false;
+	} else {
+	    return true;
+	}
+    }
+
     private void orderTestClasses( List<Class<?>> testClasses, RunOrder runOrder )
     {
         if ( RunOrder.TESTORDER.equals( runOrder ) )
