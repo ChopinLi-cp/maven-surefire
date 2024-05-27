@@ -112,7 +112,7 @@ public class DefaultRunOrderCalculator
 
     @Override
     public boolean getNormal() {
-        if ( RunOrder.TESTORDER.equals( runOrder ) ) {
+        if ( RunOrder.TESTORDER.equals( this.runOrder[0] ) ) {
 	    return false;
 	} else {
 	    return true;
