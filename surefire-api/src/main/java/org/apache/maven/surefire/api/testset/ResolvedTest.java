@@ -446,6 +446,15 @@ public final class ResolvedTest
             }
             else
             {
+		String pattern = ResolvedTest.this.methodPattern;
+                String name = methodName;
+                if (pattern.contains("[*]")) {
+                    pattern = pattern.substring(0, pattern.indexOf("["));
+                    if (name.contains("[")) {
+                        name = name.substring(0, name.indexOf("["));
+                    }
+                    return name.equals(pattern);
+                }
                 return matchPath( ResolvedTest.this.methodPattern, methodName );
             }
         }
